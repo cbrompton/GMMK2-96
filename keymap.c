@@ -26,21 +26,26 @@
 #define BLUE_RGB          0, 26, 255
 #define DARKBLUE_RGB      0, 60, 120
 #define DARKORANGE_HSV    7, 255, 255
+#define WHITE_RGB         255, 255, 255
 //  GMMK 2 96 Default Function Layer colors
-#define ARROW_KEY_COLORS        ORANGE_RGB
-#define MISC_KEY_COLORS         RGB_YELLOW
+#define ARROW_KEY_COLORS        WHITE_RGB
+#define MISC_KEY_COLORS         BLUE_RGB
 #define RESET_KEY_COLORS        RGB_RED
-#define RGB_KEY_COLORS          RGB_PURPLE
-#define MEDIA_KEY_COLORS        RGB_GOLD
+#define RGB_KEY_COLORS          WHITE_RGB
+#define MEDIA_KEY_COLORS        DARKBLUE_RGB
+#define DYN_MACRO_REC_COLORS    RGB_RED
+#define DYN_MACRO_PLAY_COLORS   RGB_GREEN
 //  Skitzo2000's custom keys
-#define TO_KEY_COLORS          BLUE_RGB
+#define TO_KEY_COLORS          DARKBLUE_RGB
 int TO_KEYS[]    = {83, 84, 97};
 //  GMMK 2 96 Default FN layer keys and Others
 int ARROW_KEYS[] =  {82, 94, 95, 96};
-int MISC_KEYS[]  =  {1, 2, 3, 4, 88, 58, 59, 76, 77};
-int RGB_KEYS[]   =  {71, 72, 73, 74, 82, 94, 95, 96};
+int MISC_KEYS[]  =  {1, 2, 3, 4, 39, 88, 58, 59, 76, 77};
+int RGB_KEYS[]   =  {71, 72, 73, 74};
 int MEDIA_KEYS[] =  {5, 6, 7, 8, 9, 10, 11};
-int RESET_KEY    =  49;
+int RESET_KEYS[] =  {49,0};
+int DYN_MACRO_REC_KEYS[] = {32, 33, 34};
+int DYN_MACRO_PLAY_KEYS[] = {50, 51};
 
 // Just a little clean up to get the lengths of the array's at compile time
 int SIZE_OF_ARROW_KEYS = sizeof(ARROW_KEYS)/sizeof(int);
@@ -48,6 +53,9 @@ int SIZE_OF_MISC_KEYS = sizeof(MISC_KEYS)/sizeof(int);
 int SIZE_OF_RGB_KEYS = sizeof(RGB_KEYS)/sizeof(int);
 int SIZE_OF_MEDIA_KEYS = sizeof(MEDIA_KEYS)/sizeof(int);
 int SIZE_OF_TO_KEYS = sizeof(TO_KEYS)/sizeof(int);
+int SIZE_OF_RESET_KEYS = sizeof(RESET_KEYS)/sizeof(int);
+int SIZE_OF_DYN_MACRO_REC_KEYS = sizeof(DYN_MACRO_REC_KEYS)/sizeof(int);
+int SIZE_OF_DYN_MACRO_PLAY_KEYS = sizeof(DYN_MACRO_PLAY_KEYS)/sizeof(int);
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
@@ -98,8 +106,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 [_FL] = LAYOUT(
     RESET,  KC_MYCM,  KC_WHOM,  KC_CALC,  KC_MSEL,  KC_MPRV,  KC_MRWD,  KC_MPLY,  KC_MSTP,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,   KC_PSCR,  _______,  _______,  _______,  _______,
-  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,
-  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,   RESET,  _______,  _______,  _______,  _______,
+  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  DYN_REC_START1,  DYN_REC_START2,  DYN_REC_STOP,  _______,
+  _______,  _______,  _______,  EMAIL_ADDRESS,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,   RESET,  DYN_MACRO_PLAY1,  DYN_MACRO_PLAY2,  _______,  _______,
   _______,  _______,  _______,  _______,  HAPPY_FRIDAY,  GOOD_MORNING,  _______,  _______,  _______,  _______,  _______,  _______,  _______,             _______,  _______,  _______,
   _______,  RGB_HUI,  RGB_HUD,  RGB_SPD,  RGB_SPI,  _______,  NAME,  HAPPY_MONDAY,  _______,  _______,  _______,  _______,   RGB_VAI,  TO(_1L),  TO(_2L),  _______,  _______,
 	_______,  UC_M_WI,  _______,                      _______,                                _______,  _______,  _______, RGB_RMOD,   RGB_VAD,  RGB_MOD,  TO(_BL),  _______)
@@ -186,6 +194,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         case 2:  //layer 2
             break;
         case 3:  //layer 2
+            rgb_matrix_set_color_all(0, 0, 0);
             //TO(Layers)
             for(int i = 0; i < SIZE_OF_TO_KEYS; i++) {
                 rgb_matrix_set_color(TO_KEYS[i], TO_KEY_COLORS);
@@ -195,7 +204,9 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 rgb_matrix_set_color(MISC_KEYS[i], MISC_KEY_COLORS);
             }
             // Reset
-            rgb_matrix_set_color(RESET_KEY, RESET_KEY_COLORS);  //  KC_HOME
+            for(int i = 0; i < SIZE_OF_RESET_KEYS; i++) {
+                rgb_matrix_set_color(RESET_KEYS[i], RESET_KEY_COLORS);
+            }  //  KC_HOME
             //RGBMatrix
             for(int i = 0; i < SIZE_OF_RGB_KEYS; i++) {
                 rgb_matrix_set_color(RGB_KEYS[i], RGB_KEY_COLORS);
@@ -203,6 +214,15 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             //Media
             for(int i = 0; i < SIZE_OF_MEDIA_KEYS; i++) {
                 rgb_matrix_set_color(MEDIA_KEYS[i], MEDIA_KEY_COLORS);
+            }
+            for(int i = 0; i < SIZE_OF_ARROW_KEYS; i++) {
+                rgb_matrix_set_color(ARROW_KEYS[i], ARROW_KEY_COLORS);
+            }
+            for(int i = 0; i < SIZE_OF_DYN_MACRO_PLAY_KEYS; i++) {
+                rgb_matrix_set_color(DYN_MACRO_PLAY_KEYS[i], DYN_MACRO_PLAY_COLORS);
+            }
+            for(int i = 0; i < SIZE_OF_DYN_MACRO_REC_KEYS; i++) {
+                rgb_matrix_set_color(DYN_MACRO_REC_KEYS[i], DYN_MACRO_REC_COLORS);
             }
             break;
         default:

@@ -4,6 +4,7 @@ enum custom_keycodes {
     GOOD_MORNING,
     HAPPY_MONDAY,
     HAPPY_FRIDAY,
+    EMAIL_ADDRESS
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -17,7 +18,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case NAME:
         if (record->event.pressed) {
-            SEND_STRING("Your Name Here");
+            SEND_STRING("Your Name Here....");
         } else {
 
         }
@@ -39,6 +40,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case HAPPY_FRIDAY:
         if (record->event.pressed) {
             SEND_STRING("Happy Friday, ");
+        } else {
+
+        }
+        break;
+    case EMAIL_ADDRESS:
+        if (record->event.pressed) {
+            SEND_STRING("your@email.address");
         } else {
 
         }
